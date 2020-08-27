@@ -30,6 +30,10 @@ class CamlBuilder {
     static FromXml(xml: string): CamlBuilder.IRawQuery {
         return CamlBuilder.Internal.createRawQuery(xml);
     }
+
+    static ReuseExpression(expressions: CamlBuilder.IExpression[]) {
+        return JSON.parse(JSON.stringify(expressions));
+    }
 }
 
 module CamlBuilder {
@@ -964,8 +968,10 @@ module CamlBuilder {
                 conditions = conditions[0];
 
             var builders = [];
-            for (var i = 0; i < conditions.length; i++)
+
+            for (var i = 0; i < conditions.length; i++) {
                 builders.push(<Builder>conditions[i]["builder"]);
+            }
 
             this.builder.WriteConditions(builders, "Or");
             return new QueryToken(this.builder, pos);
@@ -1450,6 +1456,7 @@ module CamlBuilder {
                     conditionBuilder.WriteEnd(conditionBuilder.unclosedTags);
                 if (i > 0) {
                     conditionBuilder.tree.splice(0, 0, { Element: "Start", Name: elementName });
+
                     this.WriteEnd();
                 }
                 Array.prototype.splice.apply(this.tree, [pos, 0].concat(conditionBuilder.tree));

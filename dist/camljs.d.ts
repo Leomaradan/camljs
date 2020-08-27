@@ -16,6 +16,7 @@ declare class CamlBuilder {
     */
     static Expression(): CamlBuilder.IFieldExpression;
     static FromXml(xml: string): CamlBuilder.IRawQuery;
+    static ReuseExpression(expressions: CamlBuilder.IExpression[]): any;
 }
 declare module CamlBuilder {
     type Aggregation = {

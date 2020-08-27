@@ -30,6 +30,9 @@ var CamlBuilder = /** @class */ (function () {
     CamlBuilder.FromXml = function (xml) {
         return CamlBuilder.Internal.createRawQuery(xml);
     };
+    CamlBuilder.ReuseExpression = function (expressions) {
+        return JSON.parse(JSON.stringify(expressions));
+    };
     return CamlBuilder;
 }());
 (function (CamlBuilder) {
@@ -568,8 +571,9 @@ var CamlBuilder = /** @class */ (function () {
             if (conditions.length == 1 && conditions[0] instanceof Array)
                 conditions = conditions[0];
             var builders = [];
-            for (var i = 0; i < conditions.length; i++)
+            for (var i = 0; i < conditions.length; i++) {
                 builders.push(conditions[i]["builder"]);
+            }
             this.builder.WriteConditions(builders, "Or");
             return new QueryToken(this.builder, pos);
         };

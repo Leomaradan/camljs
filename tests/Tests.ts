@@ -20,6 +20,19 @@ export default class Tests extends tsUnit.TestClass {
         return { errors, passes: test.passes };
     }
 
+    TestMultiCalls() {
+        const flds = ["Title", "ThirdColumnText"];
+        const fldsExpr:CamlBuilder.IExpression[] = flds.map(f=>CamlBuilder.Expression().TextField(f).Contains('nine'));
+
+        const firstPass = new CamlBuilder().Where().Any(CamlBuilder.ReuseExpression(fldsExpr)).ToString();
+        const secondPass = new CamlBuilder().Where().Any(CamlBuilder.ReuseExpression(fldsExpr)).ToString();
+
+        this.areIdentical(
+            vkbeautify.xml(firstPass),
+            vkbeautify.xml(secondPass)
+        );
+    }
+
     TestAny() {
 
         var caml = new CamlBuilder().Where()

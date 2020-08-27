@@ -47,7 +47,7 @@ function vkbeautify() {
     this.shift = createShiftArr(this.step);
 };
 
-vkbeautify.prototype.xml = function (text, step) {
+vkbeautify.prototype.xml = function (text, step = 4) {
 
     var ar = text.replace(/>\s{0,}</g, "><")
                     .replace(/</g, "~::~<")

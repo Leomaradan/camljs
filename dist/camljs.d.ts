@@ -16,6 +16,8 @@ declare class CamlBuilder {
     */
     static Expression(): CamlBuilder.IFieldExpression;
     static FromXml(xml: string): CamlBuilder.IRawQuery;
+    static ReuseWhere(xml: string): CamlBuilder.IFieldExpression;
+    static ReuseWhereFinal(xml: string): CamlBuilder.IExpression;
     static ReuseExpression(expressions: CamlBuilder.IExpression[]): any;
 }
 declare module CamlBuilder {
@@ -378,6 +380,16 @@ declare module CamlBuilder {
         /** Change Where clause */
         ReplaceWhere(): IFieldExpression;
         ModifyWhere(): IRawQueryModify;
+        /**
+         * Takes a raw CAML <Query> as string, and update it to a full <View> CAML string object, including ViewFields, and RowLimit
+         * Replacing the existing ones if needed.
+         * @param rowLimit New RowLimit to apply
+         * @param paged Defines if the RowLimit is returning Paged results
+         * @param viewFields List of field names to add into the ViewFields section of the query
+         */
+        OverrideQueryParams(rowLimit: number, paged: boolean, viewFields: any[]): IExpression;
+        ReturnReusableWhere(): IFieldExpression;
+        ReturnFinalWhere(): IExpression;
     }
     interface IRawQueryModify {
         AppendOr(): IFieldExpression;

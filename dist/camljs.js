@@ -30,6 +30,12 @@ var CamlBuilder = /** @class */ (function () {
     CamlBuilder.FromXml = function (xml) {
         return CamlBuilder.Internal.createRawQuery(xml);
     };
+    CamlBuilder.ReuseWhere = function (xml) {
+        return CamlBuilder.Internal.createRawQuery(xml).ReturnReusableWhere();
+    };
+    CamlBuilder.ReuseWhereFinal = function (xml) {
+        return CamlBuilder.Internal.createRawQuery(xml).ReturnFinalWhere();
+    };
     CamlBuilder.ReuseExpression = function (expressions) {
         return JSON.parse(JSON.stringify(expressions));
     };
@@ -356,11 +362,104 @@ var CamlBuilder = /** @class */ (function () {
         RawQueryInternal.prototype.ModifyWhere = function () {
             return this;
         };
+        RawQueryInternal.prototype.OverrideQueryParams = function (rowLimit, paged, viewFields) {
+            // Init the <View> Root node
+            var viewbuilder = new Builder();
+            viewbuilder.WriteStart("View");
+            viewbuilder.unclosedTags++;
+            // viewFields is a required param, but it might be an empty array, therefore we check it.
+            if (viewFields) {
+                var fieldNames = [];
+                var aggregations = [];
+                for (var _i = 0, viewFields_2 = viewFields; _i < viewFields_2.length; _i++) {
+                    var viewField = viewFields_2[_i];
+                    if (typeof viewField === "string")
+                        fieldNames.push(viewField);
+                    else
+                        aggregations.push(viewField);
+                }
+                if (fieldNames.length > 0) {
+                    // If we have ViewFields, we init a <ViewFields> Node
+                    viewbuilder.WriteStart("ViewFields");
+                    for (var i = 0; i < viewFields.length; i++) {
+                        // Add any FieldRef as child nodes
+                        viewbuilder.WriteFieldRef(viewFields[i]);
+                    }
+                    // Closing <ViewFields>
+                    viewbuilder.WriteEnd();
+                }
+                // TODO: Add this block of code for aggregations
+                /* if (aggregations.length > 0)
+                    new ViewInternal().CreateAggregations(aggregations); */
+            }
+            // rowLimit is a required param, but the value might be undefined for some reason, better double check it.
+            if (rowLimit) {
+                // If we have a rowLimit, we push a new node of <RowLimit>, with or without attributes
+                if (paged)
+                    viewbuilder.tree.push({ Element: "Start", Name: "RowLimit", Attributes: [{ Name: "Paged", Value: "TRUE" }] });
+                else
+                    viewbuilder.tree.push({ Element: "Start", Name: "RowLimit" });
+                // We set the <RowLimit> inner value to the actual row limit provided
+                viewbuilder.tree.push({ Element: "Raw", Xml: rowLimit });
+                // Close the <RowLimit> node
+                viewbuilder.tree.push({ Element: "End" });
+            }
+            // Init the <Query> Node
+            var builder = new Builder();
+            var xmlDoc = this.getXmlDocument(this.xml);
+            var whereBuilder = this.parseRecursive(builder, xmlDoc.documentElement, ModifyType.Replace);
+            if (whereBuilder == null)
+                throw new Error("CamlJs error: cannot find Query tag in provided XML");
+            if (whereBuilder.tree.length > 0) {
+                builder.WriteStart("Where");
+                builder.unclosedTags++;
+            }
+            // Concat any <Where> clauses into the <Query> node array. As <Query> is not closed, they would be child nodes
+            builder.tree = builder.tree.concat(whereBuilder.tree);
+            // Concat the full <Query> node tree into the <View> node array. As <View> is not closed, they would be child nodes
+            viewbuilder.tree = viewbuilder.tree.concat(builder.tree);
+            // If there was a <Where>, we add a closing tag for it
+            if (whereBuilder.tree.length > 0)
+                viewbuilder.WriteEnd();
+            // Closing the final open tag (<View>)
+            viewbuilder.WriteEnd();
+            return new QueryToken(viewbuilder, 0);
+        };
+        RawQueryInternal.prototype.ReturnReusableWhere = function () {
+            return this.returnReusableWhere();
+        };
+        RawQueryInternal.prototype.ReturnFinalWhere = function () {
+            return this.returnFinalWhere();
+        };
         RawQueryInternal.prototype.AppendOr = function () {
             return this.modifyWhere(ModifyType.AppendOr);
         };
         RawQueryInternal.prototype.AppendAnd = function () {
             return this.modifyWhere(ModifyType.AppendAnd);
+        };
+        RawQueryInternal.prototype.returnReusableWhere = function () {
+            var builder = new Builder();
+            var xmlDoc = this.getXmlDocument(this.xml);
+            var whereBuilder = this.parseRecursive(builder, xmlDoc.documentElement, ModifyType.Replace);
+            if (whereBuilder == null)
+                throw new Error("CamlJs error: cannot find Query tag in provided XML");
+            builder.WriteStart("Where");
+            builder.unclosedTags++;
+            builder.tree = builder.tree.concat(whereBuilder.tree);
+            return new FieldExpression(builder);
+        };
+        RawQueryInternal.prototype.returnFinalWhere = function () {
+            var builder = new Builder();
+            var xmlDoc = this.getXmlDocument(this.xml);
+            var whereBuilder = this.parseRecursive(builder, xmlDoc.documentElement, ModifyType.Replace);
+            if (whereBuilder == null)
+                throw new Error("CamlJs error: cannot find Query tag in provided XML");
+            if (whereBuilder.tree.length > 0) {
+                builder.WriteStart("Where");
+                builder.unclosedTags++;
+            }
+            builder.tree = builder.tree.concat(whereBuilder.tree);
+            return new QueryToken(builder, 0);
         };
         RawQueryInternal.prototype.modifyWhere = function (modifyType) {
             var builder = new Builder();

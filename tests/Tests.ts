@@ -20,6 +20,38 @@ export default class Tests extends tsUnit.TestClass {
         return { errors, passes: test.passes };
     }
 
+    TestFromXmlAndReuse() {
+        const baseQuery = '<Query><Where><Eq><FieldRef Name="ID" /><Value Type="Counter">24</Value></Eq></Where></Query>';
+
+        var caml = CamlBuilder.ReuseWhereFinal(baseQuery);
+
+        var camlbuild = new CamlBuilder().Where().CounterField("ID").EqualTo(24).ToString();
+        this.areIdentical(vkbeautify.xml('<Query>'+camlbuild+'</Query>'), vkbeautify.xml(caml.ToString()));
+    }
+
+    TestOverrideQueryParams_1() {
+        var baseQuery:string = '';
+        var caml = CamlBuilder.FromXml(`<Query>${baseQuery}</Query>`);
+        var newCaml = caml.OverrideQueryParams(100, true, ['Field1', 'Field2']);
+
+        this.areIdentical(vkbeautify.xml(`<View><ViewFields><FieldRef Name="Field1" /><FieldRef Name="Field2" /></ViewFields><RowLimit Paged="TRUE">100</RowLimit><Query /></View>`), vkbeautify.xml(newCaml.ToString()));
+    }
+    TestOverrideQueryParams_2() {
+        var baseQuery:string = '<OrderBy><FieldRef Name="Title" Ascending="FALSE" /></OrderBy><Where><Eq><FieldRef Name="ChoiceA" /><Value Type="Text">HIGH</Value></Eq></Where>';
+        var caml = CamlBuilder.FromXml(`<Query>${baseQuery}</Query>`);
+        var newCaml = caml.OverrideQueryParams(10, false, ['Field1', 'Field2']);
+
+        this.areIdentical(vkbeautify.xml(`<View><ViewFields><FieldRef Name="Field1" /><FieldRef Name="Field2" /></ViewFields><RowLimit>10</RowLimit><Query><OrderBy><FieldRef Name="Title" Ascending="FALSE" /></OrderBy><Where><Eq><FieldRef Name="ChoiceA" /><Value Type="Text">HIGH</Value></Eq></Where></Query></View>`), vkbeautify.xml(newCaml.ToString()));
+    }
+    TestOverrideQueryParams_3() {
+        var baseQuery:string = '<Where><Eq><FieldRef Name="ChoiceA" /><Value Type="Text">HIGH</Value></Eq></Where>';
+        var caml = CamlBuilder.FromXml(`<Query>${baseQuery}</Query>`);
+        var updatedCaml = caml.ModifyWhere().AppendAnd().LookupField('lookup').Id().EqualTo(42);
+        var newCaml = CamlBuilder.FromXml(updatedCaml.ToString()).OverrideQueryParams(25, false, ['Field1', 'Field2']);
+
+        this.areIdentical(vkbeautify.xml(`<View><ViewFields><FieldRef Name="Field1" /><FieldRef Name="Field2" /></ViewFields><RowLimit>25</RowLimit><Query><Where><And><Eq><FieldRef Name="ChoiceA" /><Value Type="Text">HIGH</Value></Eq><Eq><FieldRef Name="lookup" LookupId="TRUE" /><Value Type="Integer">42</Value></Eq></And></Where></Query></View>`), vkbeautify.xml(newCaml.ToString()));
+    }
+
     TestMultiCalls() {
         const flds = ["Title", "ThirdColumnText"];
         const fldsExpr:CamlBuilder.IExpression[] = flds.map(f=>CamlBuilder.Expression().TextField(f).Contains('nine'));

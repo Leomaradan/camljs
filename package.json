@@ -1,6 +1,6 @@
 {
   "name": "camljs",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "description": "Library for creating SharePoint CAML queries client-side. For JSOM, REST or SPServices.",
   "main": "dist/camljs.js",
   "types": "dist/camljs.d.ts",
@@ -34,9 +34,9 @@
   "homepage": "https://github.com/sbryois/camljs#readme",
   "devDependencies": {
     "@types/node": "^9.6.61",
-    "c8": "^7.10.0",
-    "typescript": "^4.4.4",
-    "uvu": "^0.5.2"
+    "c8": "^7.11.0",
+    "typescript": "^4.6.3",
+    "uvu": "^0.5.3"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.7.5"

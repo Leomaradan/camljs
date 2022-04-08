@@ -45,7 +45,7 @@ test("FinalizeTwice", () => {
 
 test("ToStringTwice", () => {
     const builder = new CamlBuilder().View().Query().Where()
-        .DateTimeField("Modified").GreaterThanOrEqualTo(new Date(2021,1,1).toISOString())
+        .DateTimeField("Modified").GreaterThanOrEqualTo('2021-01-31T22:00:00.000Z')
     const query1 = builder.ToString();
     const query2 = builder.ToString();
 

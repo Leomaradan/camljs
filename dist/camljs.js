@@ -628,9 +628,17 @@ var CamlBuilder = /** @class */ (function () {
         FieldExpression.prototype.DateField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "Date");
         };
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Date in UTC */
+        FieldExpression.prototype.DateUTCField = function (internalName) {
+            return new FieldExpressionToken(this.builder, internalName, "DateUTC");
+        };
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime */
         FieldExpression.prototype.DateTimeField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "DateTime");
+        };
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime forced in UTC*/
+        FieldExpression.prototype.DateTimeUTCField = function (internalName) {
+            return new FieldExpressionToken(this.builder, internalName, "DateTimeUTC");
         };
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is ModStat (moderation status) */
         FieldExpression.prototype.ModStatField = function (internalName) {
@@ -1049,17 +1057,37 @@ var CamlBuilder = /** @class */ (function () {
         };
         Builder.prototype.WriteValueElement = function (valueType, value) {
             this.ThrowIfFinalized();
-            if (valueType == "Date")
+            if (valueType == "Date") {
                 this.tree.push({ Kind: "Value", ValueType: "DateTime", Value: value });
-            else if (valueType == "DateTime")
+            }
+            else if (valueType == "DateUTC") {
+                this.tree.push({
+                    Kind: "Value",
+                    ValueType: "DateTime",
+                    StorageTZ: true,
+                    Value: value
+                });
+            }
+            else if (valueType == "DateTime") {
                 this.tree.push({
                     Kind: "Value",
                     ValueType: "DateTime",
                     Value: value,
                     IncludeTimeValue: true
                 });
-            else
+            }
+            else if (valueType == "DateTimeUTC") {
+                this.tree.push({
+                    Kind: "Value",
+                    ValueType: "DateTime",
+                    Value: value,
+                    StorageTZ: true,
+                    IncludeTimeValue: true
+                });
+            }
+            else {
                 this.tree.push({ Kind: "Value", ValueType: valueType, Value: value });
+            }
         };
         Builder.prototype.WriteMembership = function (startIndex, type, groupId) {
             this.ThrowIfFinalized();
@@ -1178,6 +1206,8 @@ var CamlBuilder = /** @class */ (function () {
                     xml += "<Value";
                     if (element.IncludeTimeValue === true)
                         xml += ' IncludeTimeValue="TRUE"';
+                    if (element.StorageTZ === true)
+                        xml += ' StorageTZ="TRUE"';
                     xml += xmlAttr("Type", element.ValueType);
                     xml += ">";
                     var value = element.Value.toString();

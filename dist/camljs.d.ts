@@ -174,8 +174,12 @@ declare module CamlBuilder {
         UserMultiField(internalName: string): IUserMultiFieldExpression;
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Date */
         DateField(internalName: string): IDateTimeFieldExpression;
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Date in UTC */
+        DateUTCField(internalName: string): IDateTimeFieldExpression;
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime */
         DateTimeField(internalName: string): IDateTimeFieldExpression;
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime in UTC */
+        DateTimeUTCField(internalName: string): IDateTimeFieldExpression;
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is ModStat (moderation status) */
         ModStatField(internalName: string): IModStatFieldExpression;
         /** Used in queries for retrieving recurring calendar events.

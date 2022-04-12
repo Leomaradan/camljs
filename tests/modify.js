@@ -6,7 +6,8 @@ var CamlBuilder = require("../dist/camljs");
 var vkbeautify = require("./vkbeautify");
 
 test("ReplaceWhere", () => {
-    var rawQuery = '<View Scope="RecursiveAll">\
+  var rawQuery =
+    '<View Scope="RecursiveAll">\
             <Query>\
                 <Where>\
                     <IsNotNull>\
@@ -16,11 +17,16 @@ test("ReplaceWhere", () => {
             </Query>\
         </View>';
 
-    var query = CamlBuilder.FromXml(rawQuery).ReplaceWhere().TextField("Title").IsNotNull().ToString();
+  var query = CamlBuilder.FromXml(rawQuery)
+    .ReplaceWhere()
+    .TextField("Title")
+    .IsNotNull()
+    .ToString();
 
-    assert.equal(
-        vkbeautify.xml(query),
-        vkbeautify.xml('<View Scope="RecursiveAll">\
+  assert.equal(
+    vkbeautify.xml(query),
+    vkbeautify.xml(
+      '<View Scope="RecursiveAll">\
             <Query>\
                 <Where>\
                     <IsNotNull>\
@@ -28,13 +34,14 @@ test("ReplaceWhere", () => {
                     </IsNotNull>\
                 </Where>\
             </Query>\
-        </View>')
-    );
-
+        </View>'
+    )
+  );
 });
 
 test("AppendToWhere", () => {
-    var rawQuery = '<View Scope="RecursiveAll">\
+  var rawQuery =
+    '<View Scope="RecursiveAll">\
             <Query>\
                 <Where>\
                     <IsNotNull>\
@@ -44,11 +51,17 @@ test("AppendToWhere", () => {
             </Query>\
         </View>';
 
-    var query = CamlBuilder.FromXml(rawQuery).ModifyWhere().AppendAnd().TextField("Title").IsNotNull().ToString();
+  var query = CamlBuilder.FromXml(rawQuery)
+    .ModifyWhere()
+    .AppendAnd()
+    .TextField("Title")
+    .IsNotNull()
+    .ToString();
 
-    assert.equal(
-        vkbeautify.xml(query),
-        vkbeautify.xml('<View Scope="RecursiveAll">\
+  assert.equal(
+    vkbeautify.xml(query),
+    vkbeautify.xml(
+      '<View Scope="RecursiveAll">\
             <Query>\
                 <Where>\
                     <And>\
@@ -61,13 +74,14 @@ test("AppendToWhere", () => {
                     </And>\
                 </Where>\
             </Query>\
-        </View>')
-    );
-
+        </View>'
+    )
+  );
 });
 
 test("AppendToWhereWithOrderBy", () => {
-    var rawQuery = '<View Scope="RecursiveAll">\
+  var rawQuery =
+    '<View Scope="RecursiveAll">\
             <Query>\
                 <Where>\
                     <Eq>\
@@ -81,11 +95,17 @@ test("AppendToWhereWithOrderBy", () => {
             </Query>\
         </View>';
 
-    var query = CamlBuilder.FromXml(rawQuery).ModifyWhere().AppendOr().TextField("Title").Contains("Summer").ToString();
+  var query = CamlBuilder.FromXml(rawQuery)
+    .ModifyWhere()
+    .AppendOr()
+    .TextField("Title")
+    .Contains("Summer")
+    .ToString();
 
-    assert.equal(
-        vkbeautify.xml(query),
-        vkbeautify.xml('<View Scope="RecursiveAll">\
+  assert.equal(
+    vkbeautify.xml(query),
+    vkbeautify.xml(
+      '<View Scope="RecursiveAll">\
             <Query>\
                 <OrderBy>\
                     <FieldRef Name="Date" />\
@@ -103,9 +123,46 @@ test("AppendToWhereWithOrderBy", () => {
                     </Or>\
                 </Where>\
             </Query>\
-        </View>')
-    );
+        </View>'
+    )
+  );
+});
 
+test("OverrideQueryParams", () => {
+  var rawQuery = '<Query><OrderBy><FieldRef Name="Title" /></OrderBy></Query>';
+
+  var viewFields = [
+    "FullName",
+    "Salutations",
+    "ContactType",
+    "BusinessPhone",
+    "EmailAddress",
+  ];
+
+  var query = CamlBuilder.FromXml(rawQuery)
+    .OverrideQueryParams(100, true, viewFields)
+    .ToString();
+
+  assert.equal(
+    vkbeautify.xml(query),
+    vkbeautify.xml(
+      '<View>\
+          <ViewFields>\
+              <FieldRef Name="FullName" />\
+              <FieldRef Name="Salutations" />\
+              <FieldRef Name="ContactType" />\
+              <FieldRef Name="BusinessPhone" />\
+              <FieldRef Name="EmailAddress" />\
+          </ViewFields>\
+          <RowLimit Paged="TRUE">100</RowLimit>\
+          <Query>\
+              <OrderBy>\
+                  <FieldRef Name="Title" />\
+              </OrderBy>\
+          </Query>\
+        </View>'
+    )
+  );
 });
 
 test.run();

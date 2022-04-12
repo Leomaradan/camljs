@@ -947,6 +947,7 @@ module CamlBuilder {
 
       // Concat any <Where> clauses into the <Query> node array. As <Query> is not closed, they would be child nodes
       builder.tree = builder.tree.concat(whereBuilder.tree);
+      builder.WriteEnd();
       // Concat the full <Query> node tree into the <View> node array. As <View> is not closed, they would be child nodes
       viewbuilder.tree = viewbuilder.tree.concat(builder.tree);
       // If there was a <Where>, we add a closing tag for it

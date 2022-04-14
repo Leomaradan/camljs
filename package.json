@@ -1,6 +1,6 @@
 {
-  "name": "camljs",
-  "version": "2.14.0",
+  "name": "@bpa-solutions/camljs",
+  "version": "2.15.0",
   "description": "Library for creating SharePoint CAML queries client-side. For JSOM, REST or SPServices.",
   "main": "dist/camljs.js",
   "types": "dist/camljs.d.ts",
@@ -27,7 +27,7 @@
     "sharepoint",
     "caml"
   ],
-  "author": "Andrei Markeev (original), Stéphane Bryois (fixes)",
+  "author": "Andrei Markeev (original), Stéphane Bryois (fixes), Léo Maradan (fixes)",
   "license": "MS-PL",
   "bugs": {
     "url": "https://github.com/sbryois/camljs/issues"

@@ -9,9 +9,9 @@ var CamlBuilder = /** @class */ (function () {
         return CamlBuilder.Internal.createWhere();
     };
     /** Generate <View> tag for SP.CamlQuery
-        @param viewFields If omitted, default view fields are requested; otherwise, only values for the fields with the specified internal names are returned.
-                          Specifying view fields is a good practice, as it decreases traffic between server and client.
-                          Additionally you can specify aggregated fields, e.g. { count: "<field name>" }, { sum: "<field name>" }, etc.. */
+          @param viewFields If omitted, default view fields are requested; otherwise, only values for the fields with the specified internal names are returned.
+                            Specifying view fields is a good practice, as it decreases traffic between server and client.
+                            Additionally you can specify aggregated fields, e.g. { count: "<field name>" }, { sum: "<field name>" }, etc.. */
     CamlBuilder.prototype.View = function (viewFields) {
         return CamlBuilder.Internal.createView(viewFields);
     };
@@ -20,10 +20,10 @@ var CamlBuilder = /** @class */ (function () {
         return CamlBuilder.Internal.createViewFields(viewFields);
     };
     /** Use for:
-        1. SPServices CAMLQuery attribute
-        2. Creating partial expressions
-        3. In conjunction with Any & All clauses
-    */
+          1. SPServices CAMLQuery attribute
+          2. Creating partial expressions
+          3. In conjunction with Any & All clauses
+      */
     CamlBuilder.Expression = function () {
         return CamlBuilder.Internal.createExpression();
     };
@@ -57,7 +57,7 @@ var CamlBuilder = /** @class */ (function () {
         /** Returns events for one week, specified by CalendarDate in QueryOptions */
         DateRangesOverlapType[DateRangesOverlapType["Week"] = 2] = "Week";
         /** Returns events for one month, specified by CalendarDate in QueryOptions.
-            Caution: usually also returns few days from previous and next months */
+                Caution: usually also returns few days from previous and next months */
         DateRangesOverlapType[DateRangesOverlapType["Month"] = 3] = "Month";
         /** Returns events for one year, specified by CalendarDate in QueryOptions */
         DateRangesOverlapType[DateRangesOverlapType["Year"] = 4] = "Year";
@@ -143,7 +143,7 @@ var CamlBuilder = /** @class */ (function () {
                     this.builder.SetAttributeToLastElement("View", "Scope", "RecursiveAll");
                     break;
                 default:
-                    throw new Error('Incorrect view scope! Please use values from CamlBuilder.ViewScope enumeration.');
+                    throw new Error("Incorrect view scope! Please use values from CamlBuilder.ViewScope enumeration.");
             }
             return this;
         };
@@ -154,7 +154,7 @@ var CamlBuilder = /** @class */ (function () {
             return this.joinsManager.Join(lookupFieldInternalName, alias, "LEFT", fromList);
         };
         /** Select projected field for using in the main Query body
-            @param remoteFieldAlias By this alias, the field can be used in the main Query body. */
+                @param remoteFieldAlias By this alias, the field can be used in the main Query body. */
         ViewInternal.prototype.Select = function (remoteFieldInternalName, remoteFieldAlias) {
             return this.joinsManager.ProjectedField(remoteFieldInternalName, remoteFieldAlias);
         };
@@ -188,27 +188,27 @@ var CamlBuilder = /** @class */ (function () {
             return new FieldExpression(this.builder);
         };
         /** Adds GroupBy clause to the query.
-            @param collapse If true, only information about the groups is retrieved, otherwise items are also retrieved.
-            @param groupLimit Return only first N groups */
+                @param collapse If true, only information about the groups is retrieved, otherwise items are also retrieved.
+                @param groupLimit Return only first N groups */
         QueryInternal.prototype.GroupBy = function (groupFieldName, collapse, groupLimit) {
             this.builder.WriteStartGroupBy(groupFieldName, collapse, groupLimit);
             return new GroupedQuery(this.builder);
         };
         /** Adds OrderBy clause to the query
-            @param fieldInternalName Internal field of the first field by that the data will be sorted (ascending)
-            @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
-            @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
-        */
+                @param fieldInternalName Internal field of the first field by that the data will be sorted (ascending)
+                @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
+                @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
+            */
         QueryInternal.prototype.OrderBy = function (fieldInternalName, override, useIndexForOrderBy) {
             this.builder.WriteStartOrderBy(override, useIndexForOrderBy);
             this.builder.WriteFieldRef(fieldInternalName);
             return new SortedQuery(this.builder);
         };
         /** Adds OrderBy clause to the query (using descending order for the first field).
-            @param fieldInternalName Internal field of the first field by that the data will be sorted (descending)
-            @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
-            @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
-        */
+                @param fieldInternalName Internal field of the first field by that the data will be sorted (descending)
+                @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
+                @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
+            */
         QueryInternal.prototype.OrderByDesc = function (fieldInternalName, override, useIndexForOrderBy) {
             this.builder.WriteStartOrderBy(override, useIndexForOrderBy);
             this.builder.WriteFieldRef(fieldInternalName, { Descending: true });
@@ -236,7 +236,7 @@ var CamlBuilder = /** @class */ (function () {
                     var join = this.joins[i];
                     this.builder.WriteStart("Join", [
                         { Name: "Type", Value: join.JoinType },
-                        { Name: "ListAlias", Value: join.Alias }
+                        { Name: "ListAlias", Value: join.Alias },
                     ]);
                     this.builder.WriteStart("Eq");
                     var fieldAttrs = { RefType: "ID" };
@@ -255,7 +255,7 @@ var CamlBuilder = /** @class */ (function () {
                         { Name: "ShowField", Value: projField.FieldName },
                         { Name: "Type", Value: "Lookup" },
                         { Name: "Name", Value: projField.Alias },
-                        { Name: "List", Value: projField.JoinAlias }
+                        { Name: "List", Value: projField.JoinAlias },
                     ]);
                     this.builder.WriteEnd();
                 }
@@ -263,11 +263,20 @@ var CamlBuilder = /** @class */ (function () {
             }
         };
         JoinsManager.prototype.Join = function (lookupFieldInternalName, alias, joinType, fromList) {
-            this.joins.push({ RefFieldName: lookupFieldInternalName, Alias: alias, JoinType: joinType, FromList: fromList });
+            this.joins.push({
+                RefFieldName: lookupFieldInternalName,
+                Alias: alias,
+                JoinType: joinType,
+                FromList: fromList
+            });
             return new Join(this.builder, this);
         };
         JoinsManager.prototype.ProjectedField = function (remoteFieldInternalName, remoteFieldAlias) {
-            this.projectedFields.push({ FieldName: remoteFieldInternalName, Alias: remoteFieldAlias, JoinAlias: this.joins[this.joins.length - 1].Alias });
+            this.projectedFields.push({
+                FieldName: remoteFieldInternalName,
+                Alias: remoteFieldAlias,
+                JoinAlias: this.joins[this.joins.length - 1].Alias
+            });
             return this.originalView;
         };
         return JoinsManager;
@@ -278,7 +287,7 @@ var CamlBuilder = /** @class */ (function () {
             this.joinsManager = joinsManager;
         }
         /** Select projected field for using in the main Query body
-            @param remoteFieldAlias By this alias, the field can be used in the main Query body. */
+                @param remoteFieldAlias By this alias, the field can be used in the main Query body. */
         Join.prototype.Select = function (remoteFieldInternalName, remoteFieldAlias) {
             return this.joinsManager.ProjectedField(remoteFieldInternalName, remoteFieldAlias);
         };
@@ -297,50 +306,56 @@ var CamlBuilder = /** @class */ (function () {
         }
         /** Adds And clause to the query. */
         QueryToken.prototype.And = function () {
-            this.builder.tree.splice(this.startIndex, 0, { Element: "Start", Name: "And" });
+            this.builder.tree.splice(this.startIndex, 0, {
+                Element: "Start",
+                Name: "And"
+            });
             this.builder.unclosedTags++;
             return new FieldExpression(this.builder);
         };
         /** Adds Or clause to the query. */
         QueryToken.prototype.Or = function () {
-            this.builder.tree.splice(this.startIndex, 0, { Element: "Start", Name: "Or" });
+            this.builder.tree.splice(this.startIndex, 0, {
+                Element: "Start",
+                Name: "Or"
+            });
             this.builder.unclosedTags++;
             return new FieldExpression(this.builder);
         };
         /** Adds GroupBy clause to the query.
-            @param collapse If true, only information about the groups is retrieved, otherwise items are also retrieved.
-            @param groupLimit Return only first N groups */
+                @param collapse If true, only information about the groups is retrieved, otherwise items are also retrieved.
+                @param groupLimit Return only first N groups */
         QueryToken.prototype.GroupBy = function (groupFieldName, collapse, groupLimit) {
             this.builder.WriteStartGroupBy(groupFieldName, collapse, groupLimit);
             return new GroupedQuery(this.builder);
         };
         /** Adds OrderBy clause to the query
-            @param fieldInternalName Internal field of the first field by that the data will be sorted (ascending)
-            @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
-            @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
-        */
+                @param fieldInternalName Internal field of the first field by that the data will be sorted (ascending)
+                @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
+                @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
+            */
         QueryToken.prototype.OrderBy = function (fieldInternalName, override, useIndexForOrderBy) {
             this.builder.WriteStartOrderBy(override, useIndexForOrderBy);
             this.builder.WriteFieldRef(fieldInternalName);
             return new SortedQuery(this.builder);
         };
         /** Adds OrderBy clause to the query (using descending order for the first field).
-            @param fieldInternalName Internal field of the first field by that the data will be sorted (descending)
-            @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
-            @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
-        */
+                @param fieldInternalName Internal field of the first field by that the data will be sorted (descending)
+                @param override This is only necessary for large lists. DON'T use it unless you know what it is for!
+                @param useIndexForOrderBy This is only necessary for large lists. DON'T use it unless you know what it is for!
+            */
         QueryToken.prototype.OrderByDesc = function (fieldInternalName, override, useIndexForOrderBy) {
             this.builder.WriteStartOrderBy(override, useIndexForOrderBy);
             this.builder.WriteFieldRef(fieldInternalName, { Descending: true });
             return new SortedQuery(this.builder);
         };
         /** Returns the XML string representing the generated CAML
-        */
+         */
         QueryToken.prototype.ToString = function () {
             return this.builder.Finalize();
         };
         /** Returns SP.CamlQuery object that represents the constructed query
-        */
+         */
         QueryToken.prototype.ToCamlQuery = function () {
             return this.builder.FinalizeToSPQuery();
         };
@@ -390,13 +405,17 @@ var CamlBuilder = /** @class */ (function () {
                 }
                 // TODO: Add this block of code for aggregations
                 /* if (aggregations.length > 0)
-                    new ViewInternal().CreateAggregations(aggregations); */
+                            new ViewInternal().CreateAggregations(aggregations); */
             }
             // rowLimit is a required param, but the value might be undefined for some reason, better double check it.
             if (rowLimit) {
                 // If we have a rowLimit, we push a new node of <RowLimit>, with or without attributes
                 if (paged)
-                    viewbuilder.tree.push({ Element: "Start", Name: "RowLimit", Attributes: [{ Name: "Paged", Value: "TRUE" }] });
+                    viewbuilder.tree.push({
+                        Element: "Start",
+                        Name: "RowLimit",
+                        Attributes: [{ Name: "Paged", Value: "TRUE" }]
+                    });
                 else
                     viewbuilder.tree.push({ Element: "Start", Name: "RowLimit" });
                 // We set the <RowLimit> inner value to the actual row limit provided
@@ -489,15 +508,14 @@ var CamlBuilder = /** @class */ (function () {
         RawQueryInternal.prototype.getXmlDocument = function (xml) {
             var xmlDoc;
             if (typeof window === "undefined") {
-                var XMLDOM = require('xmldom').DOMParser;
+                var XMLDOM = require("xmldom").DOMParser;
                 xmlDoc = new XMLDOM().parseFromString(this.xml, "text/xml");
             }
             else if (window["DOMParser"]) {
                 var parser = new DOMParser();
                 xmlDoc = parser.parseFromString(this.xml, "text/xml");
-            }
-            else // Internet Explorer
-             {
+            } // Internet Explorer
+            else {
                 xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc["async"] = false;
                 xmlDoc["loadXML"](this.xml);
@@ -511,13 +529,17 @@ var CamlBuilder = /** @class */ (function () {
             }
             var attrs = [];
             for (var i = 0, len = node.attributes.length; i < len; i++) {
-                attrs.push({ Name: node.attributes[i].name, Value: node.attributes[i].value });
+                attrs.push({
+                    Name: node.attributes[i].name,
+                    Value: node.attributes[i].value
+                });
             }
             builder.WriteStart(node.nodeName, attrs);
             builder.unclosedTags++;
             var found = node.nodeName == "Query" ? new Builder() : null;
             for (var i = 0, len = node.childNodes.length; i < len; i++) {
-                if (node.nodeName == "Query" && node.childNodes[i].nodeName == "Where") {
+                if (node.nodeName == "Query" &&
+                    node.childNodes[i].nodeName == "Where") {
                     var whereBuilder = new Builder();
                     var whereNode = node.childNodes[i];
                     for (var w = 0, wlen = whereNode.childNodes.length; w < wlen; w++) {
@@ -558,7 +580,6 @@ var CamlBuilder = /** @class */ (function () {
         FieldExpression.prototype.ComputedField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "Computed");
         };
-        ;
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Boolean */
         FieldExpression.prototype.BooleanField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "Integer");
@@ -599,23 +620,31 @@ var CamlBuilder = /** @class */ (function () {
         FieldExpression.prototype.DateField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "Date");
         };
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Date in UTC */
+        FieldExpression.prototype.DateUTCField = function (internalName) {
+            return new FieldExpressionToken(this.builder, internalName, "DateUTC");
+        };
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime */
         FieldExpression.prototype.DateTimeField = function (internalName) {
             return new FieldExpressionToken(this.builder, internalName, "DateTime");
+        };
+        /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is DateTime forced in UTC*/
+        FieldExpression.prototype.DateTimeUTCField = function (internalName) {
+            return new FieldExpressionToken(this.builder, internalName, "DateTimeUTC");
         };
         /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is ModStat (moderation status) */
         FieldExpression.prototype.ModStatField = function (internalName) {
             return new ModStatFieldExpression(this.builder, internalName);
         };
         /** Used in queries for retrieving recurring calendar events.
-            @param overlapType Defines type of overlap: return all events for a day, for a week, for a month or for a year
-            @param calendarDate Defines date that will be used for determining events for which exactly day/week/month/year will be returned.
-                                This value is ignored for overlapType=Now, but for the other overlap types it is mandatory.
-                                This value will cause generation of QueryOptions/CalendarDate element.
-            @param eventDateField Internal name of "Start Time" field (default: "EventDate" - all OOTB Calendar lists use this name)
-            @param endDateField Internal name of "End Time" field (default: "EndDate" - all OOTB Calendar lists use this name)
-            @param recurrenceIDField Internal name of "Recurrence ID" field (default: "RecurrenceID" - all OOTB Calendar lists use this name)
-         */
+                @param overlapType Defines type of overlap: return all events for a day, for a week, for a month or for a year
+                @param calendarDate Defines date that will be used for determining events for which exactly day/week/month/year will be returned.
+                                    This value is ignored for overlapType=Now, but for the other overlap types it is mandatory.
+                                    This value will cause generation of QueryOptions/CalendarDate element.
+                @param eventDateField Internal name of "Start Time" field (default: "EventDate" - all OOTB Calendar lists use this name)
+                @param endDateField Internal name of "End Time" field (default: "EndDate" - all OOTB Calendar lists use this name)
+                @param recurrenceIDField Internal name of "Recurrence ID" field (default: "RecurrenceID" - all OOTB Calendar lists use this name)
+             */
         FieldExpression.prototype.DateRangesOverlap = function (overlapType, calendarDate, eventDateField, endDateField, recurrenceIDField) {
             var pos = this.builder.tree.length;
             this.builder.WriteStart("DateRangesOverlap");
@@ -913,7 +942,10 @@ var CamlBuilder = /** @class */ (function () {
             return new QueryToken(this.builder, this.startIndex);
         };
         FieldExpressionToken.prototype.In = function (arrayOfValues) {
-            this.builder.tree.splice(this.startIndex, 0, { Element: "Start", Name: "In" });
+            this.builder.tree.splice(this.startIndex, 0, {
+                Element: "Start",
+                Name: "In"
+            });
             this.builder.WriteStart("Values");
             for (var i = 0; i < arrayOfValues.length; i++) {
                 var value = arrayOfValues[i];
@@ -980,16 +1012,29 @@ var CamlBuilder = /** @class */ (function () {
             for (var i = this.tree.length - 1; i >= 0; i--) {
                 if (this.tree[i].Name == tagName) {
                     this.tree[i].Attributes = this.tree[i].Attributes || [];
-                    this.tree[i].Attributes.push({ Name: attributeName, Value: attributeValue });
+                    this.tree[i].Attributes.push({
+                        Name: attributeName,
+                        Value: attributeValue
+                    });
                     return;
                 }
             }
-            throw new Error("CamlJs ERROR: can't find element '" + tagName + "' in the tree while setting attribute " + attributeName + " to '" + attributeValue + "'!");
+            throw new Error("CamlJs ERROR: can't find element '" +
+                tagName +
+                "' in the tree while setting attribute " +
+                attributeName +
+                " to '" +
+                attributeValue +
+                "'!");
         };
         Builder.prototype.WriteRowLimit = function (paged, limit) {
             this.ThrowIfSealed();
             if (paged)
-                this.tree.push({ Element: "Start", Name: "RowLimit", Attributes: [{ Name: "Paged", Value: "TRUE" }] });
+                this.tree.push({
+                    Element: "Start",
+                    Name: "RowLimit",
+                    Attributes: [{ Name: "Paged", Value: "TRUE" }]
+                });
             else
                 this.tree.push({ Element: "Start", Name: "RowLimit" });
             this.tree.push({ Element: "Raw", Xml: limit });
@@ -998,7 +1043,11 @@ var CamlBuilder = /** @class */ (function () {
         Builder.prototype.WriteStart = function (tagName, attributes) {
             this.ThrowIfSealed();
             if (attributes)
-                this.tree.push({ Element: "Start", Name: tagName, Attributes: attributes });
+                this.tree.push({
+                    Element: "Start",
+                    Name: tagName,
+                    Attributes: attributes
+                });
             else
                 this.tree.push({ Element: "Start", Name: tagName });
         };
@@ -1011,7 +1060,7 @@ var CamlBuilder = /** @class */ (function () {
         };
         Builder.prototype.WriteFieldRef = function (fieldInternalName, options) {
             this.ThrowIfSealed();
-            var fieldRef = { Element: 'FieldRef', Name: fieldInternalName };
+            var fieldRef = { Element: "FieldRef", Name: fieldInternalName };
             for (var name in options || {}) {
                 fieldRef[name] = options[name];
             }
@@ -1020,11 +1069,39 @@ var CamlBuilder = /** @class */ (function () {
         Builder.prototype.WriteValueElement = function (valueType, value) {
             this.ThrowIfSealed();
             if (valueType == "Date")
-                this.tree.push({ Element: "Value", ValueType: "DateTime", Value: value });
+                this.tree.push({
+                    Element: "Value",
+                    ValueType: "DateTime",
+                    Value: value
+                });
+            else if (valueType == "DateUTC")
+                this.tree.push({
+                    Element: "Value",
+                    ValueType: "DateTime",
+                    Value: value,
+                    StorageTZ: true
+                });
             else if (valueType == "DateTime")
-                this.tree.push({ Element: "Value", ValueType: "DateTime", Value: value, IncludeTimeValue: true });
+                this.tree.push({
+                    Element: "Value",
+                    ValueType: "DateTime",
+                    Value: value,
+                    IncludeTimeValue: true
+                });
+            else if (valueType == "DateTimeUTC")
+                this.tree.push({
+                    Element: "Value",
+                    ValueType: "DateTime",
+                    Value: value,
+                    IncludeTimeValue: true,
+                    StorageTZ: true
+                });
             else
-                this.tree.push({ Element: "Value", ValueType: valueType, Value: value });
+                this.tree.push({
+                    Element: "Value",
+                    ValueType: valueType,
+                    Value: value
+                });
         };
         Builder.prototype.WriteMembership = function (startIndex, type, groupId) {
             this.ThrowIfSealed();
@@ -1032,7 +1109,11 @@ var CamlBuilder = /** @class */ (function () {
             if (groupId) {
                 attributes.push({ Name: "ID", Value: groupId });
             }
-            this.tree.splice(startIndex, 0, { Element: "Start", Name: "Membership", Attributes: attributes });
+            this.tree.splice(startIndex, 0, {
+                Element: "Start",
+                Name: "Membership",
+                Attributes: attributes
+            });
             this.WriteEnd();
         };
         Builder.prototype.WriteUnaryOperation = function (startIndex, operation) {
@@ -1085,7 +1166,11 @@ var CamlBuilder = /** @class */ (function () {
             if (useIndexForOrderBy)
                 attributes.push({ Name: "UseIndexForOrderBy", Value: "TRUE" });
             if (attributes.length > 0)
-                this.tree.push({ Element: "Start", Name: "OrderBy", Attributes: attributes });
+                this.tree.push({
+                    Element: "Start",
+                    Name: "OrderBy",
+                    Attributes: attributes
+                });
             else
                 this.tree.push({ Element: "Start", Name: "OrderBy" });
             this.unclosedTags++;
@@ -1099,7 +1184,10 @@ var CamlBuilder = /** @class */ (function () {
                 if (conditionBuilder.unclosedTags > 0)
                     conditionBuilder.WriteEnd(conditionBuilder.unclosedTags);
                 if (i > 0) {
-                    conditionBuilder.tree.splice(0, 0, { Element: "Start", Name: elementName });
+                    conditionBuilder.tree.splice(0, 0, {
+                        Element: "Start",
+                        Name: elementName
+                    });
                     this.WriteEnd();
                 }
                 Array.prototype.splice.apply(this.tree, [pos, 0].concat(conditionBuilder.tree));
@@ -1121,7 +1209,10 @@ var CamlBuilder = /** @class */ (function () {
                     if (this.tree[i].Descending)
                         writer.writeAttributeString("Ascending", "FALSE");
                     for (var attr in this.tree[i]) {
-                        if (attr == "Element" || attr == "Name" || attr == "LookupId" || attr == "Descending")
+                        if (attr == "Element" ||
+                            attr == "Name" ||
+                            attr == "LookupId" ||
+                            attr == "Descending")
                             continue;
                         writer.writeAttributeString(attr, this.tree[i][attr]);
                     }
@@ -1142,6 +1233,8 @@ var CamlBuilder = /** @class */ (function () {
                     writer.writeStartElement("Value");
                     if (this.tree[i].IncludeTimeValue === true)
                         writer.writeAttributeString("IncludeTimeValue", "TRUE");
+                    if (this.tree[i].StorageTZ === true)
+                        writer.writeAttributeString("StorageTZ", "TRUE");
                     writer.writeAttributeString("Type", this.tree[i].ValueType);
                     var value = this.tree[i].Value.toString();
                     if (value.slice(0, 1) == "{" && value.slice(-1) == "}")
@@ -1186,7 +1279,7 @@ var CamlBuilder = /** @class */ (function () {
         }
         /** Dynamic value that represents current date with specified offset (may be negative) */
         CamlValues.TodayWithOffset = function (offsetDays) {
-            return "{Today OffsetDays=\"" + offsetDays + "\"}";
+            return '{Today OffsetDays="' + offsetDays + '"}';
         };
         /** Dynamic value that represents Id of the current user */
         CamlValues.UserID = "{UserID}";
@@ -1196,46 +1289,46 @@ var CamlBuilder = /** @class */ (function () {
         /** Dynamic value that represents a property of the current list */
         CamlValues.ListProperty = {
             /** Date and time the list was created. */
-            Created: "{ListProperty Name=\"Created\"}",
+            Created: '{ListProperty Name="Created"}',
             /** Server-relative URL of the default list view. */
-            DefaultViewUrl: "{ListProperty Name=\"DefaultViewUrl\"}",
+            DefaultViewUrl: '{ListProperty Name="DefaultViewUrl"}',
             /** Description of the list. */
-            Description: "{ListProperty Name=\"Description\"}",
+            Description: '{ListProperty Name="Description"}',
             /** Determines if RSS syndication is enabled for the list */
-            EnableSyndication: "{ListProperty Name=\"EnableSyndication\"}",
+            EnableSyndication: '{ListProperty Name="EnableSyndication"}',
             /** Number of items in the list */
-            ItemCount: "{ListProperty Name=\"ItemCount\"}",
+            ItemCount: '{ListProperty Name="ItemCount"}',
             /** Title linked to the list */
-            LinkTitle: "{ListProperty Name=\"LinkTitle\"}",
+            LinkTitle: '{ListProperty Name="LinkTitle"}',
             /** For a document library that uses version control with major versions only, maximum number of major versions allowed for items. */
-            MajorVersionLimit: "{ListProperty Name=\"MajorVersionLimit\"}",
+            MajorVersionLimit: '{ListProperty Name="MajorVersionLimit"}',
             /** For a document library that uses version control with both major and minor versions, maximum number of major versions allowed for items. */
-            MajorWithMinorVersionsLimit: "{ListProperty Name=\"MajorWithMinorVersionsLimit\"}",
+            MajorWithMinorVersionsLimit: '{ListProperty Name="MajorWithMinorVersionsLimit"}',
             /** Site-relative URL for the list. */
-            RelativeFolderPath: "{ListProperty Name=\"RelativeFolderPath\"}",
+            RelativeFolderPath: '{ListProperty Name="RelativeFolderPath"}',
             /** Title of the list. */
-            Title: "{ListProperty Name=\"Title\"}",
+            Title: '{ListProperty Name="Title"}',
             /** View selector with links to views for the list. */
-            ViewSelector: "{ListProperty Name=\"ViewSelector\"}"
+            ViewSelector: '{ListProperty Name="ViewSelector"}'
         };
         /** Dynamic value that represents a property of the current SPWeb */
         CamlValues.ProjectProperty = {
             /** Category of the current post item. */
-            BlogCategoryTitle: "{ProjectProperty Name=\"BlogCategoryTitle\"}",
+            BlogCategoryTitle: '{ProjectProperty Name="BlogCategoryTitle"}',
             /** Title of the current post item. */
-            BlogPostTitle: "{ProjectProperty Name=\"BlogPostTitle\"}",
+            BlogPostTitle: '{ProjectProperty Name="BlogPostTitle"}',
             /** Represents a description for the current website. */
-            Description: "{ProjectProperty Name=\"Description\"}",
+            Description: '{ProjectProperty Name="Description"}',
             /** Represents a value that determines whether the recycle bin is enabled for the current website. */
-            RecycleBinEnabled: "{ProjectProperty Name=\"RecycleBinEnabled\"}",
+            RecycleBinEnabled: '{ProjectProperty Name="RecycleBinEnabled"}',
             /** User name of the owner for the current site collection. */
-            SiteOwnerName: "{ProjectProperty Name=\"SiteOwnerName\"}",
+            SiteOwnerName: '{ProjectProperty Name="SiteOwnerName"}',
             /** Full URL of the current site collection. */
-            SiteUrl: "{ProjectProperty Name=\"SiteUrl\"}",
+            SiteUrl: '{ProjectProperty Name="SiteUrl"}',
             /** Title of the current Web site. */
-            Title: "{ProjectProperty Name=\"Title\"}",
+            Title: '{ProjectProperty Name="Title"}',
             /** Full URL of the current Web site. */
-            Url: "{ProjectProperty Name=\"Url\"}"
+            Url: '{ProjectProperty Name="Url"}'
         };
         return CamlValues;
     }());
@@ -1243,11 +1336,15 @@ var CamlBuilder = /** @class */ (function () {
 })(CamlBuilder || (CamlBuilder = {}));
 // -------------------- Dependencies ------------------
 (function (window) {
-    if (typeof (window["Sys"]) == "undefined" || window["Sys"] == null) {
+    if (typeof window["Sys"] == "undefined" || window["Sys"] == null) {
         window["Sys"] = {};
         window["Sys"].StringBuilder = function Sys$StringBuilder(initialText) {
-            this._parts = (typeof (initialText) !== 'undefined' && initialText !== null && initialText !== '') ?
-                [initialText.toString()] : [];
+            this._parts =
+                typeof initialText !== "undefined" &&
+                    initialText !== null &&
+                    initialText !== ""
+                    ? [initialText.toString()]
+                    : [];
             this._value = {};
             this._len = 0;
         };
@@ -1256,8 +1353,9 @@ var CamlBuilder = /** @class */ (function () {
         };
         var Sys$StringBuilder$appendLine = function (text) {
             this._parts[this._parts.length] =
-                ((typeof (text) === 'undefined') || (text === null) || (text === '')) ?
-                    '\r\n' : text + '\r\n';
+                typeof text === "undefined" || text === null || text === ""
+                    ? "\r\n"
+                    : text + "\r\n";
         };
         var Sys$StringBuilder$clear = function () {
             this._parts = [];
@@ -1267,20 +1365,22 @@ var CamlBuilder = /** @class */ (function () {
         var Sys$StringBuilder$isEmpty = function () {
             if (this._parts.length === 0)
                 return true;
-            return this.toString() === '';
+            return this.toString() === "";
         };
         var Sys$StringBuilder$toString = function (separator) {
-            separator = separator || '';
+            separator = separator || "";
             var parts = this._parts;
             if (this._len !== parts.length) {
                 this._value = {};
                 this._len = parts.length;
             }
             var val = this._value;
-            if (typeof (val[separator]) === 'undefined') {
-                if (separator !== '') {
+            if (typeof val[separator] === "undefined") {
+                if (separator !== "") {
                     for (var i = 0; i < parts.length;) {
-                        if ((typeof (parts[i]) === 'undefined') || (parts[i] === '') || (parts[i] === null)) {
+                        if (typeof parts[i] === "undefined" ||
+                            parts[i] === "" ||
+                            parts[i] === null) {
                             parts.splice(i, 1);
                         }
                         else {
@@ -1300,11 +1400,11 @@ var CamlBuilder = /** @class */ (function () {
             toString: Sys$StringBuilder$toString
         };
     }
-    if (typeof window["SP"] == 'undefined') {
+    if (typeof window["SP"] == "undefined") {
         window["SP"] = {};
         var SP_ScriptUtility$isNullOrEmptyString = function (str) {
             var strNull = null;
-            return str === strNull || typeof str === 'undefined' || !str.length;
+            return str === strNull || typeof str === "undefined" || !str.length;
         };
         window["SP"].XmlWriter = function SP_XmlWriter($p0) {
             this.$f_0 = [];
@@ -1324,7 +1424,7 @@ var CamlBuilder = /** @class */ (function () {
                 this.$1A_0();
                 this.$f_0.push(tagName);
                 this.$11_0 = tagName;
-                this.$1_0.append('<');
+                this.$1_0.append("<");
                 this.$1_0.append(tagName);
                 this.$V_0 = false;
                 this.$k_0 = false;
@@ -1342,13 +1442,13 @@ var CamlBuilder = /** @class */ (function () {
                     throw "Invalid operation";
                 }
                 if (!this.$V_0) {
-                    this.$1_0.append(' />');
+                    this.$1_0.append(" />");
                     this.$V_0 = true;
                 }
                 else {
-                    this.$1_0.append('</');
+                    this.$1_0.append("</");
                     this.$1_0.append(this.$11_0);
-                    this.$1_0.append('>');
+                    this.$1_0.append(">");
                 }
                 this.$f_0.pop();
                 if (this.$f_0.length > 0) {
@@ -1360,7 +1460,7 @@ var CamlBuilder = /** @class */ (function () {
             },
             $1A_0: function SP_XmlWriter$$1A_0() {
                 if (!this.$V_0) {
-                    this.$1_0.append('>');
+                    this.$1_0.append(">");
                     this.$V_0 = true;
                 }
             },
@@ -1368,26 +1468,26 @@ var CamlBuilder = /** @class */ (function () {
                 if (this.$V_0) {
                     throw "Invalid operation";
                 }
-                this.$1_0.append(' ');
+                this.$1_0.append(" ");
                 this.$1_0.append(localName);
-                this.$1_0.append('=\"');
+                this.$1_0.append('="');
                 this.$1T_0(value, true);
-                this.$1_0.append('\"');
+                this.$1_0.append('"');
             },
             writeStartAttribute: function SP_XmlWriter$writeStartAttribute(localName) {
                 if (!this.$V_0) {
                     throw "Invalid operation";
                 }
                 this.$k_0 = true;
-                this.$1_0.append(' ');
+                this.$1_0.append(" ");
                 this.$1_0.append(localName);
-                this.$1_0.append('=\"');
+                this.$1_0.append('="');
             },
             writeEndAttribute: function SP_XmlWriter$writeEndAttribute() {
                 if (!this.$k_0) {
                     throw "Invalid operation";
                 }
-                this.$1_0.append('\"');
+                this.$1_0.append('"');
                 this.$k_0 = false;
             },
             writeString: function SP_XmlWriter$writeString(value) {
@@ -1417,36 +1517,35 @@ var CamlBuilder = /** @class */ (function () {
                 for (var $v_0 = 0; $v_0 < $p0.length; $v_0++) {
                     var $v_1 = $p0.charCodeAt($v_0);
                     if ($v_1 === 62) {
-                        this.$1_0.append('&gt;');
+                        this.$1_0.append("&gt;");
                     }
                     else if ($v_1 === 60) {
-                        this.$1_0.append('&lt;');
+                        this.$1_0.append("&lt;");
                     }
                     else if ($v_1 === 38) {
-                        this.$1_0.append('&amp;');
+                        this.$1_0.append("&amp;");
                     }
                     else if ($v_1 === 34 && $p1) {
-                        this.$1_0.append('&quot;');
+                        this.$1_0.append("&quot;");
                     }
                     else if ($v_1 === 39 && $p1) {
-                        this.$1_0.append('&apos;');
+                        this.$1_0.append("&apos;");
                     }
                     else if ($v_1 === 9 && $p1) {
-                        this.$1_0.append('&#09;');
+                        this.$1_0.append("&#09;");
                     }
                     else if ($v_1 === 10) {
-                        this.$1_0.append('&#10;');
+                        this.$1_0.append("&#10;");
                     }
                     else if ($v_1 === 13) {
-                        this.$1_0.append('&#13;');
+                        this.$1_0.append("&#13;");
                     }
                     else {
-                        this.$1_0.append(($p0.charAt($v_0)).toString());
+                        this.$1_0.append($p0.charAt($v_0).toString());
                     }
                 }
             },
-            close: function SP_XmlWriter$close() {
-            }
+            close: function SP_XmlWriter$close() { }
         };
     }
 })(typeof window != "undefined" ? window : global);

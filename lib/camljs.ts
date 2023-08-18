@@ -187,12 +187,20 @@ module CamlBuilder {
   export interface IFieldExpression {
     /** Adds And clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
     All(...conditions: IExpression[]): IExpression;
+    /** Adds And clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    And(...conditions: IExpression[]): IExpression;
     /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
     Any(...conditions: IExpression[]): IExpression;
+    /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    Or(...conditions: IExpression[]): IExpression;    
     /** Adds And clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
     All(conditions: IExpression[]): IExpression;
+    /** Adds And clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    And(conditions: IExpression[]): IExpression;
     /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
     Any(conditions: IExpression[]): IExpression;
+    /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    Or(conditions: IExpression[]): IExpression;
     /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is Text */
     TextField(internalName: string): ITextFieldExpression;
     /** Specifies that a condition will be tested against the field with the specified internal name, and the type of this field is ContentTypeId */
@@ -1250,6 +1258,10 @@ module CamlBuilder {
       this.builder.WriteConditions(builders, "And");
       return new QueryToken(this.builder, pos);
     }
+    /** Adds And clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    And(...conditions: any[]): IExpression {
+      return this.All(...conditions);
+    }
     /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
     Any(...conditions: any[]): IExpression {
       var pos = this.builder.tree.length;
@@ -1265,6 +1277,10 @@ module CamlBuilder {
 
       this.builder.WriteConditions(builders, "Or");
       return new QueryToken(this.builder, pos);
+    }
+    /** Adds Or clauses to the query. Use for creating bracket-expressions in conjuction with CamlBuilder.Expression(). */
+    Or(...conditions: any[]): IExpression {
+      return this.Any(...conditions);
     }
   }
 
